@@ -1,17 +1,20 @@
+mod input;
 
+pub fn parse_input(input: &str) {
+    unimplemented!();
+}
 
 #[cfg(test)]
 mod tests {
-    use super::{};
-    use super::input::INPUT;
+    use super::{input::INPUT, parse_input,};
     
     #[test]
-    fn test() {
-
+    fn first_test() {
+        unimplemented!();
     }
-}
 
-mod input {
-    #[allow(dead_code)]
-    pub const INPUT: &str = r#""#;
+    #[test]
+    fn second_test() {
+        unimplemented!();
+    }
 }
