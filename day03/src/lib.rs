@@ -6,7 +6,7 @@ pub fn parse_input(input: &str) -> Vec<Vec<char>> {
     .collect::<Vec<Vec<char>>>()
 }
 
-pub fn detect_collisions(map: Vec<Vec<char>>, vertical_vector: usize, horizontal_vector: usize) -> u32 {
+pub fn detect_collisions(map: &Vec<Vec<char>>, vertical_vector: usize, horizontal_vector: usize) -> u32 {
     let mut pos: (usize, usize) = (0, 0); // vertical, horizontal
     let mut collisions: u32 = 0;
     let vertical_bound = map.len();
@@ -28,8 +28,8 @@ mod tests {
     use super::{input::INPUT, parse_input, detect_collisions};
     
     #[test]
-    fn first_test() { //part 1
-        let col = detect_collisions(parse_input(INPUT), 1, 3);
+    fn first_test() { // part 1
+        let col = detect_collisions(&parse_input(INPUT), 1, 3);
         println!("{}", col);
     }
 
@@ -38,8 +38,8 @@ mod tests {
         let i = parse_input(INPUT);
         let vectors = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
         let answer: u64 = vectors.iter()
-        .map(|v| detect_collisions(i.clone(), v.1, v.0) as u64)
-        .product();
+            .map(|v| detect_collisions(&i, v.1, v.0) as u64)
+            .product();
         println!("{}", answer);
     }
 }
