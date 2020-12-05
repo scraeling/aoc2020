@@ -35,7 +35,7 @@ pub fn parse_input(input: &str) -> Vec<Seat> {
         })
         .collect::<Vec<Seat>>();
 
-    seats.sort_by(|a, b| a.cmp(b));
+    seats.sort_by(|a, b| a.2.cmp(&b.2));
     seats
 }
 
