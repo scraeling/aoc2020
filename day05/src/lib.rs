@@ -2,35 +2,24 @@ mod input;
 
 type Seat = (u32, u32, u32); // (row, col, id)
 
-trait StringToNumber {
-    fn binary_to_u32(&self) -> u32;
-}
-
-impl StringToNumber for str {
-    fn binary_to_u32(&self) -> u32 {
-        u32::from_str_radix(self, 2).unwrap()
-    }
-}
-
 pub fn parse_input(input: &str) -> Vec<Seat> {
     let mut seats = input
         .split('\n')
         .map(|seat| {
-            let (row, col) = seat.split_at(7);
-            let row = row.chars()
+            let binary_coded_seat = u32::from_str_radix(
+                &seat.chars()
                 .map(|c| match c {
+                    'B' => '1',
                     'F' => '0',
-                    _ => '1'
-                })
-                .collect::<String>()
-                .binary_to_u32();
-            let col = col.chars()
-                .map(|c| match c {
                     'R' => '1',
-                    _ => '0'
+                    'L' => '0',
+                    _ => panic!("Invalid input: {}", c)
                 })
-                .collect::<String>()
-                .binary_to_u32();
+                .collect::<String>(),
+                2
+            ).unwrap();
+            let row = binary_coded_seat >> 3;
+            let col = binary_coded_seat & 0b0000000111;
             (row, col, row * 8 + col)
         })
         .collect::<Vec<Seat>>();
