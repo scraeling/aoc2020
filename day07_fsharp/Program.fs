@@ -1,10 +1,10 @@
 open System.Collections.Generic
 
 module Input =
-    type RuleMap = IDictionary<string, (uint * string) []>
+    type RuleMap = IDictionary<string, (uint * string)[]>
 
-    let parseLine (rule: string) =
-        let parts = 
+    let parseLine (rule:string) =
+        let parts =
             rule.Split "contain"
             |> Array.map (fun x -> (x.Trim [|' ';','|]).Split " ")
         let bagName = parts.[0].[0] + parts.[0].[1]
@@ -20,28 +20,25 @@ module Input =
 
     let parseInput filename :RuleMap =
         System.IO.File.ReadAllLines filename
-        |> Array.map (parseLine)
+        |> Array.map parseLine
         |> dict
 
 module Solution =
     let scanned = ref (new List<string>())
 
-    let rec findNumContainersOf (containee:string) (rules:ref<Input.RuleMap>) = 
-        if (!scanned).Contains containee then
-            0u
-        else
-            (!scanned).Add containee
-            let containers = 
-                (!rules)
-                |> Seq.filter (fun x -> 
-                    x.Value
-                    |> Array.exists (fun x -> (snd x) = containee)
-                )
-                |> Seq.map (fun x -> x.Key)
-            let recurse x = findNumContainersOf x rules
-            match Array.ofSeq containers with
-            |  [||] -> 1u
-            | c -> 1u + Array.sumBy recurse c
+    let rec findNumContainersOf (containee:string) (rules:ref<Input.RuleMap>) =
+        if (!scanned).Contains containee then 0u else
+        (!scanned).Add containee
+        let containers = 
+            (!rules)
+            |> Seq.filter (fun x -> 
+                x.Value
+                |> Array.exists (fun x -> (snd x) = containee)
+            )
+            |> Seq.map (fun x -> x.Key)
+        match Array.ofSeq containers with
+        | [||] -> 1u
+        | c -> 1u + Array.sumBy (fun x -> findNumContainersOf x rules) c
 
     let rec findNumContaineesOf (container:string) (rules:ref<Input.RuleMap>) =
         match (!rules).[container] with
@@ -51,7 +48,7 @@ module Solution =
             |> Array.sumBy (fun x -> fst x + fst x * findNumContaineesOf (snd x) rules)
 
     let part1 (rules:Input.RuleMap) =
-        (findNumContainersOf "shinygold" (ref rules)) - 1u
+        findNumContainersOf "shinygold" (ref rules) - 1u
 
     let part2 (rules:Input.RuleMap) =
         findNumContaineesOf "shinygold" (ref rules)
