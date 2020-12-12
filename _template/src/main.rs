@@ -2,33 +2,23 @@ use std::fs::read_to_string;
 use timer::time;
 
 fn main() {
-    let input = time!(parse_input);
-    let input_ref = input.as_ref();
-    let p1_answer = time!(part_1, input_ref);
-    let p2_answer = time!(part_2, input_ref);
+    let input = read_to_string("input.txt").unwrap();
+    let parsed_input = time!(parse_input(input));
+    let p1_answer = time!(part_1());
+    let p2_answer = time!(part_2());
 
     println!("{}", p1_answer);
     println!("{}", p2_answer);
 }
 
-fn parse_input() -> String {
-    read_to_string("input.txt").unwrap()
+fn parse_input(input: String) {
+
 }
 
-fn part_1(input: &str) -> String {
-    "".to_string()
+fn part_1() {
+
 }
 
-fn part_2(input: &str) -> String {
-    "".to_string()
-}
+fn part_2() {
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test() {
-        unimplemented!();
-    }
 }
