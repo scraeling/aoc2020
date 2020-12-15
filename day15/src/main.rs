@@ -37,20 +37,18 @@ impl MemoryGame {
     }
 
     fn next(&mut self) {
-        self.turn += 1;
-        //print!("Turn {}: Considering {} ", &self.turn, &self.considering);
         match self.cache.get(&self.considering) {
             Some(&l) => {
                 self.last = self.considering;
-                self.considering = self.turn - l - 1;
+                self.considering = self.turn - l;
             }
             None => {
                 self.last = self.considering;
                 self.considering = 0;
             }
         }
-        //println!("Spoke {}", self.considering);
-        self.cache.insert(self.last, self.turn-1);
+        self.cache.insert(self.last, self.turn);
+        self.turn += 1;
     }
 }
 
