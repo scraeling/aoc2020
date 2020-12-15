@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 use timer::time;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Clone)]
 struct Mask {
@@ -25,16 +25,15 @@ impl Mask {
         .collect::<String>()
     }
 
-    fn combinations(mask: &str) -> Vec<String> {
-        let mut new_combi: Vec<String> = Vec::new();
+    fn combinations<'a>(mask: String, combs: &'a mut HashSet<String>) -> &'a mut HashSet<String> {
         if mask.contains("X") {
-            new_combi = Mask::combinations(&mask.replacen("X", "0", 1));
-            new_combi.append(&mut Mask::combinations(&mask.replacen("X", "1", 1)));
+            Mask::combinations(mask.replacen("X", "0", 1), combs);
+            Mask::combinations(mask.replacen("X", "1", 1), combs);
         }
         else {
-            new_combi.push(mask.to_string());
+            combs.insert(mask);
         }
-        new_combi
+        combs
     }
 }
 
@@ -92,7 +91,7 @@ fn part_2(instructions: &Vec<Instruction>) -> usize {
         match i {
             Instruction::Mask(m) => mask = m.clone(),
             Instruction::Mem(address, value) => {
-                Mask::combinations(&mask.apply_v2(address))
+                Mask::combinations(mask.apply_v2(address), &mut HashSet::new())
                 .iter()
                 .map(|m| usize::from_str_radix(m, 2).unwrap())
                 .for_each(|a| {memory.insert(a, value.clone());})
@@ -110,22 +109,4 @@ fn main() {
     
     println!("Decoder Emulator v1 memory total: {}", p1_answer);
     println!("Decoder Emulator v2 memory total: {}", p2_answer);
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn combi_gen() {
-        let c = Mask::combinations("X1X");
-        assert_eq!(c, vec!["010", "011", "110", "111"]);
-    }
-
-    #[test]
-    fn mask_apply_v2() {
-        let m: Mask = "000000000000000000000000000000X1001X".into();
-        let c = Mask::combinations(&m.apply_v2(&42));
-        assert_eq!(usize::from_str_radix(&c[0], 2).unwrap(), 26);
-    }
 }
