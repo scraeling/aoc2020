@@ -9,22 +9,6 @@ fn parse_input(input: String) -> Vec<usize> {
     .collect()
 }
 
-// #[derive(Debug)]
-// struct LayeredCake (HashMap<usize, (usize, usize)>);
-// impl LayeredCake {
-//     fn insert(&mut self, k: usize, v: usize) {
-//         match self.0.get(&k) {
-//             Some(&(pv, _)) => { self.0.insert(k, (v, pv)); }
-//             None => { self.0.insert(k, (v, 0)); }
-//         } 
-//     }
-
-//     fn get(&self, k: &usize) -> Option<&(usize, usize)> {
-//         self.0.get(k)
-//     }
-// }
-
-#[derive(Debug)]
 struct MemoryGame {
     turn: usize,
     considering: usize,
