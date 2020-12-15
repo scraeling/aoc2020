@@ -16,20 +16,19 @@ impl Mask {
 
     fn apply_v2(&self, number: &usize) -> String {
         format!("{:036b}", number | self.mask_0)
-            .chars()
-            .zip(self.mask.chars())
-            .map(|(n, m)| match m {
-                'X' => 'X',
-                _ => n
-            })
-            .collect::<String>()
+        .chars()
+        .zip(self.mask.chars())
+        .map(|(n, m)| match m {
+            'X' => 'X',
+            _ => n
+        })
+        .collect::<String>()
     }
 
     fn combinations(mask: &str) -> Vec<String> {
         let mut new_combi: Vec<String> = Vec::new();
         if mask.contains("X") {
-            new_combi = 
-                Mask::combinations(&mask.replacen("X", "0", 1));
+            new_combi = Mask::combinations(&mask.replacen("X", "0", 1));
             new_combi.append(&mut Mask::combinations(&mask.replacen("X", "1", 1)));
         }
         else {
@@ -59,7 +58,8 @@ fn parse_input(input: String) -> Vec<Instruction> {
     .map(|l| {
         if l.starts_with("mask") {
             Instruction::Mask(l.split(" ").nth(2).unwrap().into())
-        } else {
+        }
+        else {
             let mut parts = l.split(" = ");
             Instruction::Mem (
                 parts.next().unwrap().split_at(4).1
