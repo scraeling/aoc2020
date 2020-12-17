@@ -2,7 +2,6 @@ use std::fs::read_to_string;
 use timer::time;
 use std::collections::{HashMap, HashSet};
 
-#[derive(Debug)]
 struct FieldRule {
     name: String,
     ranges: Vec<std::ops::RangeInclusive<usize>>,
