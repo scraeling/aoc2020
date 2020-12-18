@@ -217,5 +217,5 @@ fn main() {
     let p2_answer = time!(part_2(&starting_state));
 
     println!("Conway Cube: Active cells after 6 cycles: {}", p1_answer);
-    println!("Conway Hypercube: Active cells after 6 cycles {}", p2_answer);
+    println!("Conway Hypercube: Active cells after 6 cycles: {}", p2_answer);
 }
