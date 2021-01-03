@@ -11,103 +11,75 @@ mod parser {
         sequence::{delimited, pair}
     };
 
-    pub mod without_precedence {
-        use super::*;
-
-        pub fn evaluate(expr: &str) -> usize {
-            expression(expr).unwrap().1
-        }
-    
-        fn number(i: &str) -> IResult<&str, usize> {
-            alt((
-                map_res(
-                    delimited(space0, digit1, space0),
-                    |x: &str| x.parse::<usize>()
-                ),
-                brackets
-            ))(i)
-        }
-    
-        fn brackets(i: &str) -> IResult<&str, usize> {
-            delimited(
-                space0,
-                delimited(tag("("), expression, tag(")")),
-                space0
-            )(i)
-        }
-    
-        fn expression(i: &str) -> IResult<&str, usize> {
-            let (rest, first) = number(i)?;
-            fold_many0(
-                pair(alt((tag("*"), tag("+"))), number),
-                first,
-                |acc, (op, val)| match op {
-                    "*" => acc * val,
-                    "+" => acc + val,
-                    _ => acc
-                }
-            )(rest)
-        }
+    fn brackets<F>(i: &str, expr_kind: F) -> IResult<&str, usize> 
+        where F: Fn(&str) -> IResult<&str, usize>
+    {
+        delimited(
+            space0,
+            delimited(tag("("), expr_kind, tag(")")),
+            space0
+        )(i)
     }
 
-    pub mod addition_precedence {
-        use super::*;
-
-        fn number(i: &str) -> IResult<&str, usize> {
-            alt((
-                map_res(
-                    delimited(space0, digit1, space0),
-                    |x: &str| x.parse::<usize>()
-                ),
-                brackets
-            ))(i)
-        }
-
-        fn addition(i: &str) -> IResult<&str, usize> {
-            let (rest, first) = number(i)?;
-            fold_many0(
-                pair(tag("+"), number),
-                first,
-                |acc, (_, val)| acc + val
-            )(rest)
-        }
-
-        fn brackets(i: &str) -> IResult<&str, usize> {
-            delimited(
-                space0,
-                delimited(tag("("), expression, tag(")")),
-                space0
-            )(i)
-        }
-
-        fn expression(expr: &str) -> IResult<&str, usize> {
-            let (rest, first) = addition(expr).unwrap();
-    
-            fold_many0(
-                pair(tag("*"), addition),
-                first,
-                |acc, (_, val)| acc * val
-            )(rest)
-        }
-
-        pub fn evaluate(expr: &str) -> usize {
-            expression(expr).unwrap().1
-        }
+    fn term<F>(i: &str, expr_kind: F) -> IResult<&str, usize> 
+        where F: Fn(&str) -> IResult<&str, usize>
+    {
+        alt((
+            map_res(
+                delimited(space0, digit1, space0),
+                |x: &str| x.parse::<usize>()
+            ),
+            |x| brackets(x, &expr_kind)
+        ))(i)
     }
-   
+
+    pub fn expression(i: &str) -> IResult<&str, usize> {
+        let (rest, first) = term(i, &expression)?;
+        fold_many0(
+            pair(
+                alt((tag("*"), tag("+"))),
+                |x| term(x, &expression)
+            ),
+            first,
+            |acc, (op, val)| match op {
+                "*" => acc * val,
+                "+" => acc + val,
+                _ => acc
+            }
+        )(rest)
+    }
+
+    fn addition(i: &str) -> IResult<&str, usize> {
+        let (rest, first) = term(i, &expression_with_precedence)?;
+        fold_many0(
+            pair(tag("+"), |x| term(x, &expression_with_precedence)),
+            first,
+            |acc, (_, val)| acc + val
+        )(rest)
+    }
+
+    pub fn expression_with_precedence(expr: &str) -> IResult<&str, usize> {
+        let (rest, first) = addition(expr).unwrap();
+
+        fold_many0(
+            pair(tag("*"), addition),
+            first,
+            |acc, (_, val)| acc * val
+        )(rest)
+    }
 }
 
 fn part_1(input: &str) -> usize {
     input
     .lines()
-    .map(parser::without_precedence::evaluate)
+    .map(|e| parser::expression(e).unwrap().1)
     .sum()
 }
 
 fn part_2(input: &str) -> usize {
     input
     .lines()
-    .map(parser::addition_precedence::evaluate)
+    .map(|e| parser::expression_with_precedence(e).unwrap().1)
     .sum()
 }
 
